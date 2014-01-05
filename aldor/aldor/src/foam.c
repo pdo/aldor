@@ -810,6 +810,9 @@ foamAuditExpr(Foam foam)
 	switch (foamTag(foam)) {
 	  case FOAM_Set:
 	  case FOAM_Def:
+		  if (foamTag(foam->foamSet.lhs) == FOAM_Values
+		      && foamArgc(foam->foamSet.lhs) == 0)
+			  foamAuditBadRef(foam);
 		  checkTypes = true;
 		  break;
 	  case FOAM_Loc:
@@ -844,11 +847,18 @@ foamAuditExpr(Foam foam)
 		    foamArgc(faFormatsv[foam->foamEElt.env]))
 			foamAuditBadRef(foam);
 		break;
-	  case FOAM_RElt:
+
+	  case FOAM_RElt: {
 		if (foam->foamRElt.format >= faNumFormats)
 			foamAuditBadRef(foam);
-		break;
-	  case FOAM_RRElt:
+		AInt fmt;
+		FoamTag type = faFoamExprType(foam->foamRElt.expr, &fmt);
+		if (type != FOAM_Rec) {
+			foamAuditBadType(foam);
+		}
+	  }
+	break;
+	case FOAM_RRElt:
 		if (foam->foamRRElt.field < 0)
 			foamAuditBadRef(foam);
 		break;
@@ -930,6 +940,7 @@ foamAuditDecl(Foam decl)
  *	- (Cast T (expr))		-> expr already of type T ?
  *	- (PushEnv FMT ...)	        -> Is FMT an env format ?
  *	- (EElt FMT ...)		->   "        "     "
+ *	- (RElt FMT ...)		->   "       rec     "
  *	- (BCall ...)			-> arguments type checking
  *	- (  FMT ), appearing in a record context -> is a record format ?
  *
@@ -1066,7 +1077,8 @@ foamAuditTypeCheck(Foam foam)
 
 	case FOAM_BCall:
 		return faTypeCheckingBCall(foam);
-	      
+
+	case FOAM_RElt:
 	default:
 		return true;
 	}
