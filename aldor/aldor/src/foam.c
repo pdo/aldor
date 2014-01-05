@@ -881,8 +881,9 @@ foamAuditExpr(Foam foam)
 		break;
 	}
 
-	if (foamAuditTypeChecking)
-		result = foamAuditTypeCheck(foam);
+	if (foamAuditTypeChecking || checkTypes)
+		if (!foamAuditTypeCheck(foam))
+			foamAuditBadType(foam);
 
 	return result;
 }
@@ -988,7 +989,7 @@ foamAuditTypeCheck(Foam foam)
 			if (typeLhs == FOAM_Arr && fmtLhs != fmtRhs
 			    && fmtLhs != 0 && fmtRhs != 0
 			    /* FIXME: The emptyFormatSlot clauses are wrong */
-				&& fmtLhs != emptyFormatSlot && fmtRhs != emptyFormatSlot) {
+			    /*&& fmtLhs != emptyFormatSlot && fmtRhs != emptyFormatSlot*/) {
 				faTypeCheckingFailure(foam,
 					"assignment between array with different base type (%s - %s)", foamInfo(fmtLhs).str, foamInfo(fmtRhs).str);
 				return false;
