@@ -315,6 +315,7 @@ optimizeFoam(Foam foam)
 	if (optCast) {
 		optfDEBUG(dbOut, "Starting retype...\n");
 		retypeUnit(foam);
+		foamAudit(foam);
 		if (DEBUG(phase)){stoAudit();}
 	}
 
