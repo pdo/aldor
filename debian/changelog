@@ -1,3 +1,10 @@
+aldor (1.2.0+20140203) precise; urgency=low
+
+  * Improved compatibility with Axiom (hash functions).
+  * Various fixes for type checking.
+
+ -- Pippijn van Steenhoven <pip88nl@gmail.com>  Mon, 03 Feb 2014 20:06:10 +0100
+
 aldor (1.2.0+20131001) precise; urgency=low
 
   * Fixes for mutually dependent domains.
