@@ -40,6 +40,7 @@
 #include "sexpr.h"
 #include "fbox.h"
 #include "foamsig.h"
+#include "symcoinfo.h"
 
 #define FOAM_NARY	(-1)	/* Identifies tags with N-ary data argument. */
 
@@ -642,6 +643,37 @@ foamDefPrintDb(Foam foam, int defNo)
 	return foamPrintDb(defs->foamDDef.argv[defNo]);
 }
 
+Bool
+foamProgHasMultiAssign(Foam prog)
+{
+	assert(foamTag(prog) == FOAM_Prog);
+	Foam seq = prog->foamProg.body;
+	int bodyArgc = foamArgc(seq);
+	int i;
+
+	for (i=0; i < bodyArgc; i++) {
+		if (foamIsMultiAssign(seq->foamSeq.argv[i])) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+Bool
+foamIsMultiAssign(Foam foam)
+{
+	return (foamTag(foam) == FOAM_Set || foamTag(foam) == FOAM_Def)
+		&& foamTag(foam->foamSet.lhs) == FOAM_Values;
+}
+
+Bool
+foamDeclEqual(Foam decl1, Foam decl2)
+{
+	return decl1->foamDecl.type == decl2->foamDecl.type
+		&& decl1->foamDecl.format == decl2->foamDecl.format;
+}
+
 /* Foam Auditing */
 
 local Bool	foamAuditExpr		(Foam foam);
@@ -650,6 +682,7 @@ local void	foamAuditBadSharing	(Foam foam);
 local void	foamAuditBadRuntime	(Foam foam);
 local void	foamAuditBadCast  	(Foam foam);
 local void	foamAuditBadDecl  	(Foam foam);
+local void	foamAuditBadType  	(Foam foam);
 
 Foam	faUnit;
 Foam	faProg;
@@ -697,11 +730,13 @@ local Bool	foamAuditCast		= false;
 
 local Bool	foamAudit0		(Foam);
 local Bool	foamAuditTypeCheck	(Foam);
+local void	foamAuditCastExpr	(Foam foam);
 
 local Bool	faTypeCheckingValues	(Foam, Foam, AInt);
 local Bool	faTypeCheckingFmtIsEnv	(Foam, AInt);
 local Bool	faTypeCheckingFmtIsRec (Foam, AInt);
 local Bool	faTypeCheckingBCall	(Foam);
+local FoamTag	faFoamExprType		(Foam, AInt *);
 
 local void	faTypeCheckingFailure	(Foam, String, ...);
 
@@ -774,7 +809,7 @@ local Bool
 foamAuditExpr(Foam foam)
 {
 	Bool	result = true;
-
+	Bool	checkTypes = false;
 	assert(foam);
 	assert(foamTag(foam) <= FOAM_LIMIT);
 	if (foamMark(foam) == FOAM_MARKED)
@@ -805,6 +840,10 @@ foamAuditExpr(Foam foam)
 	foamIter(foam, arg, foamAuditExpr(*arg));
 
 	switch (foamTag(foam)) {
+	  case FOAM_Set:
+	  case FOAM_Def:
+		  checkTypes = true;
+		  break;
 	  case FOAM_Loc:
 		if (foam->foamLoc.index >= faNumLocals)
 			foamAuditBadRef(foam);
@@ -862,7 +901,8 @@ foamAuditExpr(Foam foam)
 	  case FOAM_Cast:
 	       if (foamTag(foam->foamCast.expr) == FOAM_Values)
 		    foamAuditBadCast(foam);
-
+	       foamAuditCastExpr(foam);
+	       break;
 	  case FOAM_CCall: 
 		  /* There was a check for runtime constraint breakage
 		   * here - removed as a layering violation... */
@@ -904,6 +944,18 @@ foamAuditDecl(Foam decl)
 		break;
 	}
 }
+
+void
+foamAuditCastExpr(Foam foam)
+{
+	FoamTag type = foam->foamCast.type;
+	FoamTag exprType = faFoamExprType(foam->foamCast.expr, NULL);
+
+	if (type == FOAM_Ptr && exprType == FOAM_SInt) {
+		foamAuditBadType(foam);
+	}
+}
+
 
 /**************************************************************************
  * NOTE: This procedure doesn't perform type checking on subtrees,
@@ -957,10 +1009,8 @@ foamAuditTypeCheck(Foam foam)
 						    rhs->foamMFmt.format);
 		}
 		else {
-			typeLhs = foamExprType(lhs, faProg, faFormats,
-					    NULL, NULL, &fmtLhs);
-			typeRhs = foamExprType(rhs, faProg, faFormats,
-					    NULL, NULL, &fmtRhs);
+			typeLhs = faFoamExprType(lhs, &fmtLhs);
+			typeRhs = faFoamExprType(rhs, &fmtRhs);
 			if (typeLhs == FOAM_Nil && typeRhs == FOAM_Ptr)
 				return true;
 			if (typeRhs == FOAM_Nil && typeLhs == FOAM_Ptr)
@@ -996,8 +1046,7 @@ foamAuditTypeCheck(Foam foam)
 
 		if (!foamAuditIf) return true;
 
-		type = foamExprType(foam->foamIf.test, faProg, faFormats,
-				    NULL, NULL, NULL);
+		type = faFoamExprType(foam->foamIf.test, NULL);
 
 		if (type != FOAM_Bool) {
 				faTypeCheckingFailure(foam,
@@ -1023,8 +1072,7 @@ foamAuditTypeCheck(Foam foam)
 						    faProg->foamProg.format);
 		}
 
-		type = foamExprType(foam->foamReturn.value, faProg, faFormats,
-				    NULL, NULL, &fmt);
+		type = faFoamExprType(foam->foamReturn.value, &fmt);
 
 		if (type != faProg->foamProg.retType) {
 			AInt typeLhs = faProg->foamProg.retType;
@@ -1046,8 +1094,7 @@ foamAuditTypeCheck(Foam foam)
 
 		if (!foamAuditCast) return true;
 
-		type = foamExprType(foam->foamCast.expr, faProg, faFormats,
-				    NULL, NULL, NULL);
+		type = faFoamExprType(foam->foamCast.expr, NULL);
 
 		return true;
 
@@ -1097,8 +1144,7 @@ faTypeCheckingValues(Foam foam, Foam values, AInt formatNo)
 	}
 	
 	for (i = 0; i < numFmtSlots; i++) {
-		type = foamExprType(values->foamValues.argv[i], faProg,
-				    faFormats, NULL, NULL, &fmt);
+		type = faFoamExprType(values->foamValues.argv[i], &fmt);
 		decl = faFormatsv[formatNo]->foamDDecl.argv[i];
 
 		if (type != decl->foamDecl.type) {
@@ -1173,8 +1219,7 @@ faTypeCheckingBCall(Foam foam)
 
 	for (i = 0; i < nargs; i++) {
 
-		argType = foamExprType(foam->foamBCall.argv[i],
-				       faProg, faFormats, NULL, NULL, &fmt);
+		argType = faFoamExprType(foam->foamBCall.argv[i], &fmt);
 
 		parType = foamBValInfo(op).argTypes[i];
 
@@ -1207,6 +1252,15 @@ faTypeCheckingFailure(Foam foam, String msg, ...)
 
 	foamWrSExpr(dbOut, foam, SXRW_AsIs);
 	va_end(argp);
+}
+
+local FoamTag
+faFoamExprType(Foam foam, AInt *fmt)
+{
+	FoamTag type = foamExprType0(foam,
+				    faProg, faFormats, NULL, NULL, fmt);
+
+	return type;
 }
 
 /* Reset the foam sharing mark. */
@@ -1248,6 +1302,13 @@ foamAuditBadDecl(Foam foam)
 	foamPrint(stderr, foam);
 	if (DEBUG(foam)){foamPrint(dbOut, faUnit);}
 	bug("\nBad foam decl\n", faConstNum);
+}
+
+local void
+foamAuditBadType(Foam foam)
+{
+	foamPrint(stderr, foam);
+	bug("\nBad type\n", faConstNum);
 }
 
 local void
@@ -2819,7 +2880,7 @@ foamExprTypeCB(Foam expr, AInt *extra, FoamExprTypeCallback callback, void *arg)
 	  case FOAM_CEnv:
 		return FOAM_Env;
 	  case FOAM_Cast:
-		  if (expr->foamCast.type == FOAM_Arr)
+		  if (expr->foamCast.type == FOAM_Arr && extra)
 			  *extra = 0;
 		return expr->foamCast.type;
 	  case FOAM_ANew:

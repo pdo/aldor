@@ -34,6 +34,7 @@ main(int argc, char *argv[])
 
 	if (testShouldRun("printf")) printfTest();
 	if (testShouldRun("ostream")) ostreamTest();
+	if (testShouldRun("float")) floatTestSuite();
 	if (testShouldRun("bigint")) bintTestSuite();
 	if (testShouldRun("bitv")) bitvTestSuite();
 	if (testShouldRun("list")) listTestSuite();
@@ -54,6 +55,7 @@ main(int argc, char *argv[])
 	if (testShouldRun("syme")) symeTest();
 	if (testShouldRun("tibup")) tibupTest();
 	if (testShouldRun("tfsat")) tfsatTest();
+	if (testShouldRun("retype")) retypeTest();
 
 	testIntEqual("fluidlevel", 0, fluidLevel);
 

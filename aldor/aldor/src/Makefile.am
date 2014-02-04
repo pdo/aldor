@@ -158,6 +158,7 @@ libstruct_a_SOURCES =	\
 	foamsig.c	\
 	forg.c		\
 	freevar.c	\
+	ftype.c		\
 	gf_syme.c	\
 	lib.c		\
 	loops.c		\
@@ -168,6 +169,7 @@ libstruct_a_SOURCES =	\
 	srcline.c	\
 	stab.c		\
 	syme.c		\
+	symcoinfo.c	\
 	tconst.c	\
 	tfcond.c	\
 	tform.c		\
@@ -225,7 +227,7 @@ libphase_a_SOURCES =	\
 	of_killp.c	\
 	of_loops.c	\
 	of_peep.c	\
-	of_retyp.c	\
+	of_retyp2.c	\
 	of_rrfmt.c	\
 	of_util.c	\
 	optfoam.c	\
@@ -257,6 +259,7 @@ testsuite =			\
 	test/test_absyn.c 	\
 	test/test_bigint.c 	\
 	test/test_bitv.c 	\
+	test/test_float.c	\
 	test/test_flog.c	\
 	test/test_fname.c 	\
 	test/test_foam.c 	\
@@ -265,6 +268,7 @@ testsuite =			\
 	test/test_list.c	\
 	test/test_ostream.c	\
 	test/test_printf.c	\
+	test/test_retyp.c	\
 	test/test_scobind.c	\
 	test/test_srcpos.c	\
 	test/test_stab.c	\

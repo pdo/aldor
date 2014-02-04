@@ -1328,6 +1328,7 @@ extern struct foamDDecl_info foamDDeclInfoTable[];
 #define foamProtoSExpr(tag) (foamProtoInfo(tag).sxsym)
 #define foamDDeclSExpr(tag) (foamDDeclInfo(tag).sxsym)
 
+/* To use these, include symcoinfo.h as well */
 #define foamIdTag(sym)      ((FoamTag)      symCoInfo(sym)->foamTagVal)
 #define foamBValIdTag(sym)  ((FoamBValTag)  symCoInfo(sym)->foamTagVal)
 #define foamProtoIdTag(sym) ((FoamProtoTag) symCoInfo(sym)->foamTagVal)
@@ -1567,6 +1568,10 @@ extern Bool foamTypeIsValue(Foam fmts, FoamTag type, AInt fmt);
 
 #define foamSelectArgc(foam)    (foamArgc(foam) - 1)
 
+extern Bool foamProgHasMultiAssign(Foam prog);
+extern Bool foamIsMultiAssign(Foam prog);
+
+extern Bool foamDeclEqual(Foam, Foam);
 /*
  * This macro can be used to strip multiple casts from an expression. Be
  * careful where you use it otherwise you may introduce bad foam sharing.
