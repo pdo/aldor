@@ -44,6 +44,11 @@ skriv(a : Tuple Type, f:a -> SingleInteger): with
 }
 
 
-SK ==> skriv((SingleInteger,SingleInteger),(m:SingleInteger,n:SingleInteger):SingleInteger +-> { print << "m: " << m << " n: " << n << newline; 100*m + 10*n});
+SK ==> skriv(
+	(SingleInteger,SingleInteger),
+	(m:SingleInteger,n:SingleInteger):SingleInteger +-> {
+		print << "m: " << m << " n: " << n << newline; 100*m + 10*n
+	}
+);
 
 print << skr(22,1)$SK << newline;
