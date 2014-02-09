@@ -102,13 +102,13 @@ $(addsuffix .ao, $(alldomains)): %.ao: $(SUBLIB_DEPEND).al
 	$(AM_V_ALDOR)set -e;							\
 	rm -f $*.c $*.ao;							\
 	cp $(SUBLIB_DEPEND).al lib$(libraryname)_$*.al;				\
-	ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep));	\
+	touch dummy; ar r lib$(libraryname)_$*.al $(addsuffix .ao, $(shell $(UNIQ) $*.dep)) dummy;	\
 	$(DBG) $(aldorexedir)/aldor $(aldor_args);				\
 	rm lib$(libraryname)_$*.al
 
 $(SUBLIB_DEPEND).al: $(foreach l,$(library_deps),$(librarylibdir)/$l/$(SUBLIB).al)
 	$(AM_V_AR)set -e;		\
-	ar cr $@;			\
+	touch dummy; ar cr $@ dummy;	\
 	for l in $+; do 		\
 	   if [ ! -f $$l ]; then	\
 	      echo "missing $$l";	\
