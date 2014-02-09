@@ -1,8 +1,8 @@
 SUBDIRS = al
 
-lib_LIBRARIES = libaxldem.a
+lib_LTLIBRARIES = libaxldem.la
 
-libaxldem_a_SOURCES =	\
+libaxldem_la_SOURCES =	\
 	al/dirprod.c	\
 	al/gb.c		\
 	al/ibits.c	\

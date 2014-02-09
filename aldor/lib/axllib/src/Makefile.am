@@ -1,8 +1,8 @@
 SUBDIRS = al
 
-lib_LIBRARIES = libaxllib.a
+lib_LTLIBRARIES = libaxllib.la
 
-libaxllib_a_SOURCES =	\
+libaxllib_la_SOURCES =	\
 	al/array.c	\
 	al/axl_boolean.c	\
 	al/axl_byte.c	\

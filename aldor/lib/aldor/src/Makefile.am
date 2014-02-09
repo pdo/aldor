@@ -1,8 +1,8 @@
 SUBDIRS = lang base arith datastruc util gmp test
 
-lib_LIBRARIES = libaldor.a
+lib_LTLIBRARIES = libaldor.la
 
-libaldor_a_SOURCES =	\
+libaldor_la_SOURCES =	\
 	arith/sal_arith.c	\
 	arith/sal_binpow.c	\
 	arith/sal_bool.c	\

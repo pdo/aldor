@@ -21,16 +21,16 @@ runtime_CSOURCES =			\
 
 AM_CFLAGS = -I$(aldorsrcdir) -DFOAM_RTS
 
-lib_LIBRARIES =
+lib_LTLIBRARIES =
 
 
 #############################################################################
 # :: Built-in bigint
 #############################################################################
 
-lib_LIBRARIES += libfoam.a
+lib_LTLIBRARIES += libfoam.la
 
-libfoam_a_SOURCES =			\
+libfoam_la_SOURCES =			\
 	$(aldorsrcdir)/bigint.c		\
 	$(aldorsrcdir)/foam_i.c		\
 	$(runtime_ALDOR)		\
@@ -42,11 +42,11 @@ libfoam_a_SOURCES =			\
 #############################################################################
 
 if GMP
-lib_LIBRARIES += libfoam-gmp.a
+lib_LTLIBRARIES += libfoam-gmp.la
 endif
 
 # TODO: get rid of bigint.c in here
-libfoam_gmp_a_SOURCES =			\
+libfoam_gmp_la_SOURCES =			\
 	../../contrib/gmp/fm_gmp.c	\
 	$(aldorsrcdir)/bigint.c		\
 	$(runtime_ALDOR)		\

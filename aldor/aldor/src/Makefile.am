@@ -18,12 +18,12 @@ include_HEADERS =	\
 	optcfg.h	\
 	platform.h
 
-noinst_LIBRARIES =	\
-	libgen.a	\
-	libphase.a	\
-	libport.a	\
-	libstruct.a	\
-	libtest.a
+noinst_LTLIBRARIES =	\
+	libgen.la	\
+	libphase.la	\
+	libport.la	\
+	libstruct.la	\
+	libtest.la
 
 AM_CPPFLAGS = -DVCSVERSION='"$(VCSVERSION)"'
 
@@ -35,12 +35,12 @@ javagen_SOURCES =	\
 	axlcomp.c	\
 	cmdline.c
 
-javagen_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
+javagen_LDADD = libphase.la libstruct.la libgen.la libport.la -lm
 javagen_LDFLAGS =
 javagen_CFLAGS = -g
 
 showexp_SOURCES = showexports.c
-showexp_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
+showexp_LDADD = libphase.la libstruct.la libgen.la libport.la -lm
 showexp_LDFLAGS =
 showexp_CFLAGS = -g
 
@@ -48,22 +48,22 @@ aldor_SOURCES =		\
 	axlcomp.c	\
 	cmdline.c	\
 	main.c
-aldor_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
+aldor_LDADD = libphase.la libstruct.la libgen.la libport.la -lm
 aldor_LDFLAGS = $(build_id)
 aldor_CFLAGS  = -g
 
 aldortest_CFLAGS = -DTEST_STAND_ALONE -DTEST_ALL -save-temps
 aldortest_SOURCES = test.c
-aldortest_LDADD = libtest.a libstruct.a libgen.a libport.a -lm
+aldortest_LDADD = libtest.la libstruct.la libgen.la libport.la -lm
 aldortest_LDFLAGS = 
 
-libport_a_SOURCES =	\
+libport_la_SOURCES =	\
 	cport.c		\
 	opsys.c		\
 	stdc.c
 
-libtest_a_CFLAGS  = -DTEST_ALL
-libtest_a_SOURCES =	\
+libtest_la_CFLAGS  = -DTEST_ALL
+libtest_la_SOURCES =	\
 	bigint_t.c	\
 	bitv_t.c	\
 	btree_t.c	\
@@ -92,7 +92,7 @@ libtest_a_SOURCES =	\
 	xfloat_t.c
 
 # Foam stuff does not belong!
-libgen_a_SOURCES =	\
+libgen_la_SOURCES =	\
 	bigint.c	\
 	bitv.c		\
 	btree.c		\
@@ -136,9 +136,9 @@ libgen_a_SOURCES =	\
 #libgen_a_LIBADD = libport.a
 
 gentest_SOURCES = gentest.c
-gentest_LDADD = libgen.a libport.a -lm
+gentest_LDADD = libgen.la libport.la -lm
 
-libstruct_a_SOURCES =	\
+libstruct_la_SOURCES =	\
 	ablogic.c	\
 	abpretty.c	\
 	absub.c		\
@@ -179,10 +179,10 @@ libstruct_a_SOURCES =	\
 	version.c
 #libstruct_a_LIBADD = libgen.a libport.a
 structtest_SOURCES = structtest.c
-structtest_LDADD = libstruct.a libgen.a libport.a -lm
+structtest_LDADD = libstruct.la libgen.la libport.la -lm
 structtest_LDFLAGS =
 
-libphase_a_SOURCES =	\
+libphase_la_SOURCES =	\
 	abcheck.c	\
 	abnorm.c	\
 	abuse.c		\
@@ -281,7 +281,7 @@ testall_SOURCES =	\
 	test/testlib.c	\
 	cmdline.c	\
 	axlcomp.c
-testall_LDADD = libphase.a libstruct.a libgen.a libport.a -lm
+testall_LDADD = libphase.la libstruct.la libgen.la libport.la -lm
 testall_LDFLAGS = 
 testall_CFLAGS = -save-temps
 #

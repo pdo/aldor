@@ -1,8 +1,8 @@
 # Aldor portability layer
-noinst_LIBRARIES = libport.a
+noinst_LTLIBRARIES = libport.la
 s = $(srcdir)/../../src
 
-libport_a_SOURCES =	\
+libport_la_SOURCES =	\
 	$s/bigint.c	\
 	$s/btree.c	\
 	$s/buffer.c	\
@@ -30,7 +30,7 @@ libport_a_SOURCES =	\
 bin_PROGRAMS = unicl
 
 unicl_SOURCES = unicl.c
-unicl_LDADD = libport.a -lm
+unicl_LDADD = libport.la -lm
 unicl_CFLAGS = -I $s $(AM_CFLAGS)
 
 

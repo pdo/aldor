@@ -34,9 +34,9 @@ SUBDIRS =			\
 	multpoly/multpolytest	\
 	test
 
-lib_LIBRARIES = libalgebra.a
+lib_LTLIBRARIES = libalgebra.la
 
-libalgebra_a_SOURCES =				\
+libalgebra_la_SOURCES =				\
 	algext/sit_algext.c			\
 	algext/sit_sae.c			\
 	algext/sit_saexcpt.c			\
