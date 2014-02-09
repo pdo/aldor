@@ -277,31 +277,32 @@ next_os_vm_region(os_vm_region_t region)
     unsigned int info_count = sizeof(data)/sizeof(int) ;
     mach_port_t object_name ;
 
-    kern_return_t response =
-        mach_vm_region(
-            this_task,
-            &address,
-            &size,
-            flavour,
-            (int *) ((void *) (&data)),
-            &info_count,
-            &object_name) ;
-    switch (response)
-        {
-        case KERN_SUCCESS:
-            region->lo = ptrFrLong(address) ;
-            region->hi = ptrFrLong(address + size) ;
-            region->flags = data.protection ;
-            break ;
-        case KERN_INVALID_ADDRESS:
-            region = 0 ;
-            break ;
+    assert(false);
+    /* kern_return_t response = */
+    /*     mach_vm_region( */
+    /*         this_task, */
+    /*         &address, */
+    /*         &size, */
+    /*         flavour, */
+    /*         (int *) ((void *) (&data)), */
+    /*         &info_count, */
+    /*         &object_name) ; */
+    /* switch (response) */
+    /*     { */
+    /*     case KERN_SUCCESS: */
+    /*         region->lo = ptrFrLong(address) ; */
+    /*         region->hi = ptrFrLong(address + size) ; */
+    /*         region->flags = data.protection ; */
+    /*         break ; */
+    /*     case KERN_INVALID_ADDRESS: */
+    /*         region = 0 ; */
+    /*         break ; */
 
-        default:
-            fprintf(stderr, "Unexpected return from vm_region: %d", response) ;
-            assert("Unexpected return from vm_region" && 0) ;
-        }
-    return region ;
+    /*     default: */
+    /*         fprintf(stderr, "Unexpected return from vm_region: %d", response) ; */
+    /*         assert("Unexpected return from vm_region" && 0) ; */
+    /*     } */
+    /* return region ; */
 }
 
 /*

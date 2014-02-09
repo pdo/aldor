@@ -175,7 +175,7 @@ osRunConcurrent(String cmd, FILE **pstdin, FILE **pstdout, FILE **pstderr)
 
 
 #if !defined(HZ) && defined(CLK_TCK)
-#  define HZ CLK_TCK
+#  define HZ CLOCKS_PER_SEC
 #endif
 
 
